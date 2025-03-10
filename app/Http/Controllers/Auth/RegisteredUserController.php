@@ -20,7 +20,16 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view ('auth.register');
+        return view('auth.register');
+    }
+
+    public function showRegistrationForm(Request $request)
+    {
+        // Ambil data nama dan email dari request
+        $nama = $request->query('nama', '');
+        $email = $request->query('email', '');
+
+        return view('auth.register', compact('nama', 'email'));
     }
 
     /**
@@ -32,12 +41,12 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|string',
-
+            'role' => ['required', 'string', 'in:admin,pegawai,anggota'],
         ]);
 
+        // Buat user baru
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -47,12 +56,25 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        if (auth()->check() && auth()->user()->role === 'admin') {
-            return redirect()->route('master.index')->with('success', 'Pengguna berhasil ditambahkan!');
+        // Jika admin yang sedang login mendaftarkan anggota, arahkan ke halaman form create anggota
+        if (Auth::check() && Auth::user()->role === 'admin' && $request->role === 'anggota') {
+            return redirect()->route('share.anggota.create')->with('success', 'Silakan lengkapi data anggota yang baru didaftarkan.');
         }
 
+        // Jika admin menambahkan pengguna lain (pegawai/admin), kembali ke halaman Master Data
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return redirect()->route('admin.master-data.index')->with('success', 'Pengguna berhasil ditambahkan!');
+        }
+
+        // Login user yang baru saja mendaftar sendiri
         Auth::login($user);
 
+        // Jika yang mendaftar sendiri adalah anggota, arahkan ke halaman create anggota
+        if ($user->role === 'anggota') {
+            return redirect()->route('share.anggota.create')->with('success', 'Silakan lengkapi data anggota Anda.');
+        }
+
+        // Default redirect ke dashboard
         return redirect(RouteServiceProvider::HOME);
     }
 }

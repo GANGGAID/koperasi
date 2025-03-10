@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use App\Models\anggota;
+use App\Models\pinjam;
+use App\Models\simpan;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -17,27 +19,18 @@ use Illuminate\View\View;
 class AdminController extends Controller
 {
     public function index()
-    {
-        return view('admin.dashboard');
+{
+    $totalAnggota = Anggota::count();
+    $totalSimpanan = Simpan::sum('jumlah');
+    $totalPinjaman = pinjam::sum('jumlah');
 
-    }
-    public function anggota() {
-        $anggotas = User::where('role', 'anggota')->paginate(10);
-        return view('admin.anggota.index', compact('anggotas'));
-    }
+    return view('admin.dashboard', [
+        'totalAnggota' => $totalAnggota,
+        'totalSimpanan' => $totalSimpanan,
+        'totalPinjaman' => $totalPinjaman,
+    ]);
+}
 
-    public function simpan() {
-         return view('admin.simpan.index');
-        }
-    public function pinjam() {
-        return view('admin.pinjam.index');
-    }
-    public function angsuran() {
-        return view('admin.angsuran.index');
-    }
-    public function laporan() {
-        return view('admin.laporan.index');
-    }
 
     // MASTER DATA CONTROLLER
     public function masterData() {

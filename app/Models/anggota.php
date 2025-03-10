@@ -11,7 +11,6 @@ class anggota extends Model
     protected $table = 'anggotas';
 
     protected $fillable = [
-        'user_id',
         'nama',
         'email',
         'alamat',
@@ -19,7 +18,7 @@ class anggota extends Model
         'jenis_kelamin',
         'nama_pewaris',
         'tanggal_masuk',
-        'tanggal_keluar',
+        'tanggal_keluar'
     ];
 
     protected $dates = [
@@ -28,7 +27,18 @@ class anggota extends Model
     ];
 
     public function user()
+{
+    return $this->belongsTo(User::class, 'user_id', 'id');
+}
+
+public function simpan()
+{
+    return $this->hasMany(Simpan::class);
+}
+
+public function simpans()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Simpan::class, 'anggota_id', 'id');
     }
+
 }

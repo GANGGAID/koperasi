@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('anggotas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('nama');
-            $table->string('email');
-            $table->text('alamat');
+            $table->string('email')->unique();
+            $table->string('alamat');
             $table->string('telepon');
             $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
-            $table->string('nama_pewaris');
+            $table->string('nama_pewaris')->nullable();
             $table->date('tanggal_masuk');
             $table->date('tanggal_keluar')->nullable();
             $table->timestamps();

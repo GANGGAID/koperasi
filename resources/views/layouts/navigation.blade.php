@@ -15,48 +15,34 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
+                    @if(auth()->user()->role === 'admin' || auth()->user()->role === 'pegawai')
+                    <x-nav-link :href="route('share.anggota.index')" :active="request()->routeIs('share.anggota.index')">
+                        {{ __('Anggota') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('share.simpan.index')" :active="request()->routeIs('share.simpan.index')">
+                        {{ __('Simpan') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('share.pinjam.index')" :active="request()->routeIs('share.pinjam.index')">
+                        {{ __('Pinjam') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('share.angsuran.index')" :active="request()->routeIs('share.angsuran.index')">
+                        {{ __('Angsuran') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('share.laporan.index')" :active="request()->routeIs('share.laporan.index')">
+                        {{ __('Laporan') }}
+                    </x-nav-link>
+
                     @if(auth()->user()->role === 'admin')
-                        <x-nav-link :href="route('admin.anggota.index')" :active="request()->routeIs('anggota.index')">
-                            {{ __('Anggota') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.simpan.index')" :active="request()->routeIs('simpan.index')">
-                            {{ __('Simpan') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.pinjam.index')" :active="request()->routeIs('pinjam.index')">
-                            {{ __('Pinjam') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.angsuran.index')" :active="request()->routeIs('angsuran.index')">
-                            {{ __('Angsuran') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('admin.laporan.index')" :active="request()->routeIs('laporan.index')">
-                            {{ __('Laporan') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('master.index')" :active="request()->routeIs('master.index')">
+                        <x-nav-link :href="route('admin.master-data.index')" :active="request()->routeIs('admin.master-data.index')">
                             {{ __('Master Data') }}
                         </x-nav-link>
-
-                    @elseif(auth()->user()->role === 'pegawai')
-                        <x-nav-link :href="route('anggota.index')" :active="request()->routeIs('anggota.index')">
-                            {{ __('Anggota') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('simpan.index')" :active="request()->routeIs('simpan.index')">
-                            {{ __('Simpan') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('pinjam.index')" :active="request()->routeIs('pinjam.index')">
-                            {{ __('Pinjam') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('angsuran.index')" :active="request()->routeIs('angsuran.index')">
-                            {{ __('Angsuran') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('laporan.index')" :active="request()->routeIs('laporan.index')">
-                            {{ __('Laporan') }}
-                        </x-nav-link>
-
-                    @elseif(auth()->user()->role === 'anggota')
-                        <x-nav-link :href="route('anggota.transaksi')" :active="request()->routeIs('anggota.transaksi')">
-                            {{ __('Transaksi Saya') }}
-                        </x-nav-link>
                     @endif
+                @elseif(auth()->user()->role === 'anggota')
+                    <x-nav-link :href="route('anggota.transaksi')" :active="request()->routeIs('anggota.transaksi')">
+                        {{ __('Transaksi Saya') }}
+                    </x-nav-link>
+                @endif
+
                 </div>
             </div>
 

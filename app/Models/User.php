@@ -50,4 +50,9 @@ public function hasRole($role)
     return $this->role === $role;  // Sesuaikan dengan kolom 'role' di tabel users
 }
 
+public function anggota()
+{
+    return $this->hasOne(Anggota::class, 'user_id', 'id');
+}
+
 }

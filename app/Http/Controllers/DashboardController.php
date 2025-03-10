@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\anggota;
 use Illuminate\Http\Request;
 
-class PegawaiController extends Controller
+class DashboardController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('pegawai.dashboard');
-
+        $totalAnggota = anggota::count(); // Menghitung jumlah anggota yang terdaftar
+        return view('dashboard', compact('totalAnggota'));
     }
 
     /**

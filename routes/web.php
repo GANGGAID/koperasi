@@ -2,9 +2,17 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\AngsuranController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\PinjamanController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SimpananController;
+use App\Models\pinjam;
 use Illuminate\Support\Facades\Route;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,26 +44,56 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Admin
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/admin/anggota', [AdminController::class, 'anggota'])->name('admin.anggota.index');
-    // Route::get('/admin/anggota', [AdminController::class, 'create'])->name('admin.anggota.create');
-    Route::get('/admin/simpan', [AdminController::class, 'simpan'])->name('admin.simpan.index');
-    Route::get('/admin/pinjam', [AdminController::class, 'pinjam'])->name('admin.pinjam.index');
-    Route::get('/admin/angsuran', [AdminController::class, 'angsuran'])->name('admin.angsuran.index');
-    Route::get('/admin/laporan', [AdminController::class, 'laporan'])->name('admin.laporan.index');
-    Route::get('/admin/master-data', [AdminController::class, 'masterData'])->name('master.index');
-    Route::get('/register', function () { return view('auth.register');})->name('register');
+Route::middleware(['auth', 'role:admin,pegawai'])->prefix('share/admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    //Anggota
+    Route::get('/anggota', [AnggotaController::class, 'index'])->name('share.anggota.index');
+    Route::get('/anggota/create', [AnggotaController::class, 'create'])->name('share.anggota.create');
+    Route::post('/anggota/store', [AnggotaController::class, 'store'])->name('share.anggota.store');
+    Route::get('/anggota/{anggota}/edit', [AnggotaController::class, 'edit'])->name('share.anggota.edit');
+    Route::put('/anggota/{anggota}', [AnggotaController::class, 'update'])->name('share.anggota.update');
+    Route::delete('/anggota/{anggota}', [AnggotaController::class, 'destroy'])->name('share.anggota.destroy');
+    Route::get('/anggota', [AnggotaController::class, 'index'])->name('share.anggota.index');
+    Route::get('/register', [RegisteredUserController::class, 'showRegistrationForm'])->name('auth.register');
+
+    // Route::get('/anggota/edit', [AnggotaController::class, 'create'])->name('share.anggota.edit');
+    //Simpanan
+    Route::get('/simpan', [SimpananController::class, 'index'])->name('share.simpan.index');
+    Route::get('/simpan/create', [SimpananController::class, 'create'])->name('share.simpan.create');
+    Route::post('/simpan/store', [SimpananController::class, 'store'])->name('share.simpan.store');
+    Route::get('/simpan/{id}/edit', [SimpananController::class, 'edit'])->name('share.simpan.edit');
+    Route::put('/simpan/{id}', [SimpananController::class, 'update'])->name('share.simpan.update');
+    Route::get('/simpan/{id}/penarikan', [SimpananController::class, 'tarik'])->name('share.simpan.tarik');
+    Route::post('/simpan/{id}/proses-penarikan', [SimpananController::class, 'prosesPenarikan'])->name('simpanan.prosesPenarikan');
+    Route::get('/simpan/{id}/riwayat', [SimpananController::class, 'riwayat'])->name('share.simpan.riwayat');
+    Route::delete('/simpan/{id}', [SimpananController::class, 'destroy'])->name('share.simpan.destroy');
+    //Pinjaman
+    Route::get('/pinjam', [PinjamanController::class, 'index'])->name('share.pinjam.index');
+    Route::get('/pinjam/create', [PinjamanController::class, 'create'])->name('share.pinjam.create');
+    Route::post('/pinjam/store', [PinjamanController::class, 'store'])->name('share.pinjam.store');
+    Route::get('/pinjam/{id}/edit', [PinjamanController::class, 'edit'])->name('share.pinjam.edit');
+    Route::put('/share/admin/pinjam/{id}', [PinjamanController::class, 'update'])->name('share.pinjam.update');
+    Route::get('/pinjam/simulasi', [PinjamanController::class, 'simulasi'])->name('share.pinjam.simulasi');
+    Route::get('/pinjam/{id}/bayar', [PinjamanController::class, 'bayar'])->name('share.pinjam.bayar');
+    Route::post('/pinjaman/{id}/bayar', [PinjamanController::class, 'storeBayar'])->name('share.pinjam.bayar.store');
+    Route::get('/pinjaman/{id}/riwayat', [PinjamanController::class, 'riwayat'])->name('share.pinjam.riwayat');
+    Route::delete('/share/pinjam/{id}', [PinjamanController::class, 'destroy'])->name('share.pinjam.destroy');
+
+    //Angsuran
+    Route::get('/angsuran', [AngsuranController::class, 'index'])->name('share.angsuran.index');
+    Route::get('/angsuran/create', [AngsuranController::class, 'create'])->name('share.angsuran.create');
+    Route::post('/angsuran/store', [AngsuranController::class, 'store'])->name('share.angsuran.store');
+    //Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('share.laporan.index');
 });
 
-// Pegawai
-Route::middleware(['auth', 'role:pegawai'])->group(function () {
-    Route::get('/pegawai/dashboard', [PegawaiController::class, 'index'])->name('pegawai.dashboard');
-    Route::get('/pegawai/anggota', [PegawaiController::class, 'anggota'])->name('anggota.index');
-    Route::get('/pegawai/simpan', [PegawaiController::class, 'simpan'])->name('simpan.index');
-    Route::get('/pegawai/pinjam', [PegawaiController::class, 'pinjam'])->name('pinjam.index');
-    Route::get('/pegawai/angsuran', [PegawaiController::class, 'angsuran'])->name('angsuran.index');
-    Route::get('/pegawai/laporan', [PegawaiController::class, 'laporan'])->name('laporan.index');
+Route::middleware(['auth', 'role:pegawai'])->prefix('share/pegawai')->group(function () {
+    Route::get('/dashboard', [PegawaiController::class, 'index'])->name('pegawai.dashboard');
+});
+
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/master-data', [AdminController::class, 'masterData'])->name('admin.master-data.index');
+    Route::get('/register', function () { return view('auth.register');})->name('register');
 });
 
 // Anggota
